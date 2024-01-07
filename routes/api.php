@@ -5,8 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BeatController;
-
-
+use App\Http\Controllers\Api\SongController; 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,8 +45,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Routes pour les Beats
     Route::get('/beats', [BeatController::class, 'index']); // Afficher la bibliothèque de Beats
     Route::get('/beatmakers/{beatmaker}/beats', [BeatController::class, 'beatmakerBeats']); // Afficher la bibliothèque de Beats d'un Beatmaker
-    Route::post('/beats', [BeatController::class, 'store'])->middleware('role:beatmaker'); // Enregistrer un nouveau Beat
+    Route::post('/beats/new', [BeatController::class, 'store'])->middleware('role:beatmaker'); // Enregistrer un nouveau Beat
     Route::get('/beats/{beat}', [BeatController::class, 'show'])->middleware('role:beatmaker'); // Afficher les détails d'un Beat
     Route::put('/beats/{beat}', [BeatController::class, 'update'])->middleware('role:beatmaker'); // Mettre à jour un Beat existant
     Route::delete('/beats/{beat}', [BeatController::class, 'destroy'])->middleware('role:beatmaker'); // Supprimer un Beat
+
+    // Routes pour les Songs
+    Route::get('/songs', [SongController::class, 'index']); // Afficher la bibliothèque de Sons
+    Route::get('/artists/{artist}/songs', [SongController::class, 'artistSongs']); // Afficher la bibliothèque de Sons d'un Artiste
+    Route::post('/songs/new', [SongController::class, 'store'])->middleware('role:artist'); // Enregistrer un nouveau Son
+    Route::get('/songs/{song}', [SongController::class, 'show'])->middleware('role:artist'); // Afficher les détails d'un Son
+    Route::put('/songs/{song}', [SongController::class, 'update'])->middleware('role:artist'); // Mettre à jour un Son existant
+    Route::delete('/songs/{song}', [SongController::class, 'destroy'])->middleware('role:artist'); // Supprimer un Sonr
 });
+

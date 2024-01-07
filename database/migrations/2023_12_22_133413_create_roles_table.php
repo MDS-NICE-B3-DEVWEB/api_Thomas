@@ -15,6 +15,10 @@ return new class extends Migration {
             $table->string('name');
             $table->timestamps();
         });
+        DB::table('roles')->insert([
+            ['name' => 'beatmaker'],
+            ['name' => 'artist'],
+        ]);
     }
 
     /**
