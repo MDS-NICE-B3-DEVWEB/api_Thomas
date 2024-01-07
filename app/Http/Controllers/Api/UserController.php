@@ -15,14 +15,12 @@ class UserController extends Controller
     public function register(RegisterUser $request)
     {
         try {
-            $user = new User();
-
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password, [
-                'rounds' => 12,
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password, ['rounds' => 12]),
             ]);
-            $user->save();
+
             $role = Role::where('name', $request->input('role'))->first();
             $user->roles()->attach($role);
 
@@ -30,20 +28,23 @@ class UserController extends Controller
                 'status_code' => 200,
                 'status_message' => 'Utilisateur enregistré.',
                 'user' => $user,
-                'role' => $role->name
+                'role' => $role->name,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Une erreur est survenue lors de l\'inscription',
-                'error' => $e->getMessage()
-            ], 500);
+                'status_code' => 500,
+                'status_message' => 'Une erreur est survenue lors de l\'inscription',
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 
     public function login(LogUserRequest $request)
     {
         try {
-            if (auth()->attempt($request->only('email', 'password'))) {
+            $credentials = $request->only('email', 'password');
+
+            if (auth()->attempt($credentials)) {
                 $user = auth()->user();
                 $token = $user->createToken('clefsecrete')->plainTextToken;
 
@@ -52,7 +53,7 @@ class UserController extends Controller
                     'status_message' => 'Utilisateur connecté.',
                     'user' => $user,
                     'role' => $user->roles()->first()->name,
-                    'token' => $token
+                    'token' => $token,
                 ]);
             } else {
                 return response()->json([
@@ -64,7 +65,7 @@ class UserController extends Controller
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Une erreur est survenue',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

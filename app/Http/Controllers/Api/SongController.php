@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\Song; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
 class SongController extends Controller
 {
     public function index()
     {
-        // Récupérer tous les Sons
         $songs = Song::all(); 
 
         return response()->json([
@@ -23,7 +23,6 @@ class SongController extends Controller
 
     public function artistSongs($artistId)
     {
-        // Récupérer les Sons de l'artiste spécifié
         $songs = Song::where('user_id', $artistId)->get();
 
         return response()->json([
@@ -36,41 +35,41 @@ class SongController extends Controller
     public function store(Request $request)
     {
         try {
-            $song = new Song();
-            $song->user_id = auth()->user()->id;
-            $song->artist_name = auth()->user()->name; // Ajout du nom de l'artiste
-            $song->title = $request->title;
+            $validator = Validator::make($request->all(), [
+                'title' => 'required|string|max:255',
+                'audio_file' => 'required|mimes:mp3|max:51200', // 50MB maximum
+            ]);
 
-            // Enregistrez le fichier MP3 dans le stockage
-            $audioFile = $request->file('audio_file');
-
-            if ($audioFile->isValid()) {
-                // Renommer le fichier MP3 en fonction du titre
-                $title = str_replace([' ', 'é'], ['_', 'e'], $song->title);
-                $artistName = str_replace([' ', 'é'], ['_', 'e'], $song->artist_name);
-                $fileName = $this->getUniqueFileName($title, $audioFile->getClientOriginalExtension(), $artistName);
-
-                // Enregistrez le fichier MP3 dans le stockage avec le nom spécifié
-                $audioFilePath = $audioFile->storeAs("songs/{$artistName}", $fileName, 'public');
-                $song->file_path = $audioFilePath;
-                $song->save();
-
+            if ($validator->fails()) {
                 return response()->json([
-                    'status_code' => 200,
-                    'status_message' => 'Son enregistré avec succès.',
-                    'song' => $song,
-                ]);
-            } else {
-                return response()->json([
-                    'status_code' => 500,
-                    'status_message' => 'Erreur lors de l\'enregistrement du fichier audio.',
+                    'status_code' => 422,
+                    'errors' => $validator->errors(),
                 ]);
             }
+
+            $song = new Song();
+            $song->user_id = auth()->user()->id;
+            $song->artist_name = auth()->user()->name;
+            $song->title = $request->title;
+
+            $audioFile = $request->file('audio_file');
+
+            $fileName = $this->getUniqueFileName($song->title, $audioFile->getClientOriginalExtension(), $song->artist_name);
+            $audioFilePath = $audioFile->storeAs("songs/{$song->artist_name}", $fileName, 'public');
+
+            $song->file_path = $audioFilePath;
+            $song->save();
+
+            return response()->json([
+                'status_code' => 200,
+                'status_message' => 'Son enregistré avec succès.',
+                'song' => $song,
+            ]);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de l\'enregistrement du Son.',
-                'exception' => $exception,
+                'exception' => $exception->getMessage(),
             ]);
         }
     }
@@ -87,10 +86,9 @@ class SongController extends Controller
     public function update(Request $request, Song $song)
     {
         try {
-            // Valider les données du formulaire (y compris le fichier MP3)
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'audio_file' => 'nullable|mimes:mp3|max:10240', // Vérifiez le fichier MP3 s'il est fourni
+                'audio_file' => 'nullable|mimes:mp3|max:51200', // 50MB maximum
             ]);
 
             if ($validator->fails()) {
@@ -100,31 +98,15 @@ class SongController extends Controller
                 ]);
             }
 
-            // Mettre à jour les champs du Son
             $song->title = $request->title;
 
-            // Si un nouveau fichier MP3 est fourni, procédez au renommage et à l'enregistrement
             if ($request->hasFile('audio_file')) {
                 $audioFile = $request->file('audio_file');
-                if ($audioFile->isValid()) {
-                    // Obtenez le nouveau titre
-                    $newTitle = str_replace([' ', 'é'], ['_', 'e'], $song->title);
 
-                    // Obtenez le nom du fichier actuel
-                    $currentFileName = pathinfo($song->file_path, PATHINFO_FILENAME);
+                $fileName = $this->getUniqueFileName($song->title, $audioFile->getClientOriginalExtension(), $song->artist_name);
+                Storage::disk('public')->delete($song->file_path);
 
-                    $artistName = str_replace([' ', 'é'], ['_', 'e'], $song->artist_name);
-
-                    // Renommer le fichier MP3 en fonction du nouveau titre
-                    $fileName = $this->getUniqueFileName($newTitle, $audioFile->getClientOriginalExtension(), $artistName);
-
-                    // Supprimer l'ancien fichier
-                    Storage::disk('public')->delete($song->file_path);
-
-                    // Enregistrez le nouveau fichier MP3 dans le stockage avec le nom spécifié
-                    $audioFilePath = $audioFile->storeAs("songs/{$newTitle}", $fileName, 'public');
-                    $song->file_path = $audioFilePath;
-                }
+                $song->file_path = $audioFile->storeAs("songs/{$song->artist_name}", $fileName, 'public');
             }
 
             $song->save();
@@ -134,11 +116,11 @@ class SongController extends Controller
                 'status_message' => 'Son mis à jour avec succès.',
                 'song' => $song,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
-                'status_message' => 'Une erreur est survenue lors de la mise à jour du Son.',
-                'error' => $e->getMessage(),
+                'status_message' => 'Erreur lors de la mise à jour du Son.',
+                'exception' => $exception->getMessage(),
             ]);
         }
     }
@@ -146,6 +128,7 @@ class SongController extends Controller
     public function destroy(Song $song)
     {
         try {
+            Storage::disk('public')->delete($song->file_path);
             $song->delete();
 
             return response()->json([
@@ -156,7 +139,7 @@ class SongController extends Controller
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de la suppression du Son.',
-                'exception' => $exception,
+                'exception' => $exception->getMessage(),
             ]);
         }
     }

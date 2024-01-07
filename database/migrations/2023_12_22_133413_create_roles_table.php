@@ -12,9 +12,10 @@ return new class extends Migration {
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique(); // Ajout de l'index unique
             $table->timestamps();
         });
+
         DB::table('roles')->insert([
             ['name' => 'beatmaker'],
             ['name' => 'artist'],
@@ -29,3 +30,4 @@ return new class extends Migration {
         Schema::dropIfExists('roles');
     }
 };
+

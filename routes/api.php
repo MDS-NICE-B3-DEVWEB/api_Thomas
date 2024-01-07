@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BeatController;
 use App\Http\Controllers\Api\SongController; 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,45 +17,40 @@ use App\Http\Controllers\Api\SongController;
 |
 */
 
-// Réccupère la liste des articles 
-Route::get('posts', [PostController::class, 'index']);
+// Route::get('posts', [PostController::class, 'index']);
 
-
-//Inscription
 Route::post('/register', [UserController::class, 'register']);
-
-//Connexion
 Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    //Créer un article
-    Route::post('posts/create', [PostController::class, 'store']);
+    // Authenticated routes
+    // Route::apiResource('posts', PostController::class)->except('index');
 
-    //Modifier un article
-    Route::put('posts/edit/{post}', [PostController::class, 'update']);
-
-    //Supprimer un article
-    Route::delete('posts/{post}', [PostController::class, 'delete']);
-
-    //Retourner l'utilisateur connecté
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+    Route::get('/user', function () {
+        return auth()->user();
     });
 
-    // Routes pour les Beats
-    Route::get('/beats', [BeatController::class, 'index']); // Afficher la bibliothèque de Beats
-    Route::get('/beatmakers/{beatmaker}/beats', [BeatController::class, 'beatmakerBeats']); // Afficher la bibliothèque de Beats d'un Beatmaker
-    Route::post('/beats/new', [BeatController::class, 'store'])->middleware('role:beatmaker'); // Enregistrer un nouveau Beat
-    Route::get('/beats/{beat}', [BeatController::class, 'show'])->middleware('role:beatmaker'); // Afficher les détails d'un Beat
-    Route::put('/beats/{beat}', [BeatController::class, 'update'])->middleware('role:beatmaker'); // Mettre à jour un Beat existant
-    Route::delete('/beats/{beat}', [BeatController::class, 'destroy'])->middleware('role:beatmaker'); // Supprimer un Beat
+    // Beats routes
+    Route::prefix('beats')->group(function () {
+        Route::get('/', [BeatController::class, 'index']);
+        Route::get('/{beat}', [BeatController::class, 'show'])->middleware('role:beatmaker');
+        Route::middleware('role:beatmaker')->group(function () {
+            Route::post('/new', [BeatController::class, 'store']);
+            Route::put('/{beat}', [BeatController::class, 'update']);
+            Route::delete('/{beat}', [BeatController::class, 'destroy']);
+        });
+    });
+    Route::get('/beatmakers/{beatmaker}/beats', [BeatController::class, 'beatmakerBeats']);
 
-    // Routes pour les Songs
-    Route::get('/songs', [SongController::class, 'index']); // Afficher la bibliothèque de Sons
-    Route::get('/artists/{artist}/songs', [SongController::class, 'artistSongs']); // Afficher la bibliothèque de Sons d'un Artiste
-    Route::post('/songs/new', [SongController::class, 'store'])->middleware('role:artist'); // Enregistrer un nouveau Son
-    Route::get('/songs/{song}', [SongController::class, 'show'])->middleware('role:artist'); // Afficher les détails d'un Son
-    Route::put('/songs/{song}', [SongController::class, 'update'])->middleware('role:artist'); // Mettre à jour un Son existant
-    Route::delete('/songs/{song}', [SongController::class, 'destroy'])->middleware('role:artist'); // Supprimer un Sonr
+    // Songs routes
+    Route::prefix('songs')->group(function () {
+        Route::get('/', [SongController::class, 'index']);
+        Route::get('/{song}', [SongController::class, 'show'])->middleware('role:artist');
+        Route::middleware('role:artist')->group(function () {
+            Route::post('/new', [SongController::class, 'store']);
+            Route::put('/{song}', [SongController::class, 'update']);
+            Route::delete('/{song}', [SongController::class, 'destroy']);
+        });
+    });
+    Route::get('/artists/{artist}/songs', [SongController::class, 'artistSongs']);
 });
-
