@@ -1,0 +1,46 @@
+version: "3" 
+
+services: 
+  api:
+    build: .
+    container_name:  api
+    hostname: api
+    restart:  always
+    ports:
+      - 8000:8000
+    volumes:
+      - /home/toms/api_Thomas/:/app
+      - /home/toms/api_Thomas/.env:/app/.env
+
+  db: 
+    image: mariadb:10.3.9
+    container_name: db
+    hostname: db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - /home/toms/db:/var/lib/mysql 
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=${DB_HOST}
+      - PMA_PORT=${DB_PORT}
+      - PMA_USER=${DB_USERNAME}
+      - PMA_PASSWORD=${DB_PASSWORD}
+
+# volumes:
+#   api: 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LogUserRequest;
 use App\Http\Requests\RegisterUser;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,13 +23,16 @@ class UserController extends Controller
                 'rounds' => 12,
             ]);
             $user->save();
+            $role = Role::where('name', $request->input('role'))->first();
+            $user->roles()->attach($role);
+
             return response()->json([
                 'status_code' => 200,
                 'status_message' => 'Utilisateur enregistré.',
-                'user'=>$user
+                'user' => $user,
+                'role' => $role->name
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Une erreur est survenue lors de l\'inscription',
                 'error' => $e->getMessage()
@@ -39,17 +43,18 @@ class UserController extends Controller
     public function login(LogUserRequest $request)
     {
         try {
-            if(auth()->attempt($request->only('email','password'))) {
+            if (auth()->attempt($request->only('email', 'password'))) {
                 $user = auth()->user();
                 $token = $user->createToken('clefsecrete')->plainTextToken;
+
                 return response()->json([
                     'status_code' => 200,
                     'status_message' => 'Utilisateur connecté.',
                     'user' => $user,
-                    'token' => $token,
+                    'role' => $user->roles()->first()->name,
+                    'token' => $token
                 ]);
-            }
-            else {
+            } else {
                 return response()->json([
                     'status_code' => 403,
                     'status_message' => 'Informations non valides.',
