@@ -115,7 +115,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
 - `GET /songs`: Récupère toutes les chansons. Nécessite un token en tant que 'artist'.
 - `GET /songs/{id}`: Récupère une chanson spécifique. Nécessite un token en tant que 'artist'.
 - `POST /songs`: Crée une nouvelle chanson. Nécessite un token en tant que 'artist'.
-  - Données à envoyer (multipart/form-data) : 
+  - Exemple de données à envoyer (multipart/form-data) : 
     - `title`: (text) "New Song"
     - `audio_file`: (file) Le fichier audio de la chanson.
 - `PUT /songs/{id}`: Met à jour une chanson spécifique. Nécessite un token en tant que 'artist'.
@@ -132,7 +132,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
 - `GET /beats`: Récupère tous les beats. Nécessite un token en tant que 'beatmaker'.
 - `GET /beats/{id}`: Récupère un beat spécifique. Nécessite un token en tant que 'beatmaker'.
 - `POST /beats`: Crée un nouveau beat. Nécessite un token en tant que 'beatmaker'.
-  - Données à envoyer (multipart/form-data) : 
+  - Exemple de données à envoyer (multipart/form-data) : 
     - `title`: (text) "New Beat"
     - `audio_file`: (file) Le fichier audio du beat.
 - `PUT /beats/{id}`: Met à jour un beat spécifique. Nécessite un token en tant que 'beatmaker'.
