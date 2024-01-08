@@ -71,7 +71,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
 ### Authentification
 
 - `POST /login`: Authentifie un utilisateur et renvoie un token.
-  - Données à envoyer : 
+  - Exemple de données à envoyer : 
     ```json
     {
       "email": "user@example.com",
@@ -82,7 +82,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
 ### Utilisateurs
 
 - `POST /register`: Crée un nouvel utilisateur.
-  - Données à envoyer : 
+  - Exemple de données à envoyer : 
     ```json
     {
       "name": "New User",
@@ -92,7 +92,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
     }
     ```
 - `POST /login`: Authentifie un utilisateur et renvoie un token.
-  - Données à envoyer : 
+  - Exemple de données à envoyer : 
     ```json
     {
       "email": "user@example.com",
@@ -100,7 +100,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
     }
     ```
 - `PUT /users/{id}`: Met à jour un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
-  - Données à envoyer : 
+  - Exemple de données à envoyer : 
     ```json
     {
       "name": "Updated User",
@@ -119,7 +119,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
     - `title`: (text) "New Song"
     - `audio_file`: (file) Le fichier audio de la chanson.
 - `PUT /songs/{id}`: Met à jour une chanson spécifique. Nécessite un token en tant que 'artist'.
-  - Données à envoyer : 
+  - Exemple de données à envoyer : 
     ```json
     {
       "title": "Updated Song"
@@ -136,7 +136,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
     - `title`: (text) "New Beat"
     - `audio_file`: (file) Le fichier audio du beat.
 - `PUT /beats/{id}`: Met à jour un beat spécifique. Nécessite un token en tant que 'beatmaker'.
-  - Données à envoyer : 
+  - Exemple de données à envoyer : 
     ```json
     {
       "title": "Updated Beat"
