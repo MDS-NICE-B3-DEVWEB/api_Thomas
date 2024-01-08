@@ -20,7 +20,7 @@ class BeatController extends Controller
             'beats' => $beats,
         ]);
     }
-    
+
     public function beatmakerBeats($beatmakerId)
     {
         $beats = Beat::where('user_id', $beatmakerId)->get();
@@ -97,7 +97,6 @@ class BeatController extends Controller
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'audio_file' => 'nullable|mimes:mp3|max:51200', // 50MB maximum
             ]);
 
             if ($validator->fails()) {
@@ -107,25 +106,18 @@ class BeatController extends Controller
                 ]);
             }
 
-            $beat->title = $request->title;
-            $beat->description = $request->description;
+            // Update the beat with the validated data
+            $beat->update($validator->validated());
 
-            if ($request->hasFile('audio_file')) {
-                $audioFile = $request->file('audio_file');
+            // Return the updated beat
+            return response()->json(
+                [
+                    'status_code' => 200,
+                    'status_message' => 'Beat mis à jour avec succès.',
+                    'beat' => $beat,
+                ]
+            );
 
-                $fileName = $this->getUniqueFileName($beat->title, $audioFile->getClientOriginalExtension(), $beat->beatmaker_name);
-                Storage::disk('public')->delete($beat->file_path);
-
-                $beat->file_path = $audioFile->storeAs("beats/{$beat->beatmaker_name}", $fileName, 'public');
-            }
-
-            $beat->save();
-
-            return response()->json([
-                'status_code' => 200,
-                'status_message' => 'Beat mis à jour avec succès.',
-                'beat' => $beat,
-            ]);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,

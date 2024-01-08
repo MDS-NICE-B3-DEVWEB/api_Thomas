@@ -22,9 +22,12 @@ use App\Http\Controllers\Api\SongController;
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
+
 Route::middleware('auth:sanctum')->group(function () {
     // Authenticated routes
     // Route::apiResource('posts', PostController::class)->except('index');
+    Route::put('/users/{user}', [UserController::class, 'update']);
+    Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     Route::get('/user', function () {
         $user = auth()->user();

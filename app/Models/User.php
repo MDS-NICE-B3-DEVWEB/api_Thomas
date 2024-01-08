@@ -55,5 +55,13 @@ class User extends Authenticatable
         return $this->roles->pluck('name')->contains($role);
     }
 
+    public function songs()
+    {
+        return $this->hasMany(Song::class);
+    }
 
+    public function beats()
+    {
+        return $this->hasMany(Beat::class);
+    }
 }

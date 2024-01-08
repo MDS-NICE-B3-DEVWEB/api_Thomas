@@ -88,7 +88,6 @@ class SongController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'audio_file' => 'nullable|mimes:mp3|max:51200', // 50MB maximum
             ]);
 
             if ($validator->fails()) {
@@ -98,24 +97,18 @@ class SongController extends Controller
                 ]);
             }
 
-            $song->title = $request->title;
+            // Update the beat with the validated data
+            $song->update($validator->validated());
 
-            if ($request->hasFile('audio_file')) {
-                $audioFile = $request->file('audio_file');
+            // Return the updated beat
+            return response()->json(
+                [
+                    'status_code' => 200,
+                    'status_message' => 'Son mis à jour avec succès.',
+                    'song' => $song,
+                ]
+            );
 
-                $fileName = $this->getUniqueFileName($song->title, $audioFile->getClientOriginalExtension(), $song->artist_name);
-                Storage::disk('public')->delete($song->file_path);
-
-                $song->file_path = $audioFile->storeAs("songs/{$song->artist_name}", $fileName, 'public');
-            }
-
-            $song->save();
-
-            return response()->json([
-                'status_code' => 200,
-                'status_message' => 'Son mis à jour avec succès.',
-                'song' => $song,
-            ]);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
@@ -124,6 +117,7 @@ class SongController extends Controller
             ]);
         }
     }
+
 
     public function destroy(Song $song)
     {

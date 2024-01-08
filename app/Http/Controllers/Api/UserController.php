@@ -68,4 +68,50 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function update(Request $request, User $user)
+{
+    // Validate the request data
+    $data = $request->validate([
+        'name' => 'required|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'required',
+    ]);
+
+    // If a new password is provided, hash it
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password, ['rounds' => 12]);
+    }
+
+    // Update the user with the validated data
+    $user->update($data);
+
+    // Return the updated user
+    return response()->json([
+        'status_code' => 200,
+        'status_message' => 'Utilisateur mis à jour.',
+        'user' => $user
+    ]);
+}
+
+public function destroy(User $user)
+{
+    // Check the user's role
+    if ($user->hasRole('beatmaker')) {
+        // If the user is a beatmaker, delete their beats
+        $user->beats()->delete();
+    } elseif ($user->hasRole('artist')) {
+        // If the user is a singer, delete their songs
+        $user->songs()->delete();
+    }
+
+    // Delete the user
+    $user->delete();
+
+    // Return a success message
+    return response()->json([
+        'status_code' => 200,
+        'status_message' => 'Utilisateur supprimé.',
+    ]);
+}
 }
