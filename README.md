@@ -1,4 +1,4 @@
-# Nom de votre API
+# Flow-Forge
 
 ## Description
 
@@ -46,7 +46,3 @@ Cette API utilise l'authentification par token. Pour accéder aux endpoints qui 
 - `POST /beats`: Crée un nouveau beat. Nécessite un token en tant que 'beatmaker'.
 - `PUT /beats/{id}`: Met à jour un beat spécifique. Nécessite un token en tant que 'beatmaker'.
 - `DELETE /beats/{id}`: Supprime un beat spécifique. Nécessite un token en tant que 'beatmaker'.
-
-## Tests
-
-Pour lancer les tests, exécutez la commande suivante : `php artisan test`
