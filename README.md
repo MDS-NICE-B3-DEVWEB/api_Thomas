@@ -81,9 +81,7 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
 
 ### Utilisateurs
 
-- `GET /users`: Récupère tous les utilisateurs. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
-- `GET /users/{id}`: Récupère un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
-- `POST /users`: Crée un nouvel utilisateur. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
+- `POST /register`: Crée un nouvel utilisateur.
   - Données à envoyer : 
     ```json
     {
@@ -93,11 +91,21 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
       "role": "artist"
     }
     ```
+- `POST /login`: Authentifie un utilisateur et renvoie un token.
+  - Données à envoyer : 
+    ```json
+    {
+      "email": "user@example.com",
+      "password": "password123"
+    }
+    ```
 - `PUT /users/{id}`: Met à jour un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
   - Données à envoyer : 
     ```json
     {
-      "name": "Updated User"
+      "name": "Updated User",
+      "email": "updateduser@example.com",
+      "password": "newpassword123"
     }
     ```
 - `DELETE /users/{id}`: Supprime un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
