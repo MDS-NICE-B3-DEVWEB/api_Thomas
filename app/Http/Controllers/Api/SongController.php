@@ -18,7 +18,7 @@ class SongController extends Controller
             'status_code' => 200,
             'status_message' => 'Bibliothèque de Sons récupérée avec succès.',
             'songs' => $songs,
-        ]);
+        ], 200);
     }
 
     public function artistSongs($artistId)
@@ -29,7 +29,7 @@ class SongController extends Controller
             'status_code' => 200,
             'status_message' => 'Sons de l\'artiste récupérés avec succès.',
             'songs' => $songs,
-        ]);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -44,7 +44,7 @@ class SongController extends Controller
                 return response()->json([
                     'status_code' => 422,
                     'errors' => $validator->errors(),
-                ]);
+                ], 422);
             }
 
             $song = new Song();
@@ -61,16 +61,16 @@ class SongController extends Controller
             $song->save();
 
             return response()->json([
-                'status_code' => 200,
+                'status_code' => 201,
                 'status_message' => 'Son enregistré avec succès.',
                 'song' => $song,
-            ]);
+            ], 201);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de l\'enregistrement du Son.',
                 'exception' => $exception->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -80,7 +80,7 @@ class SongController extends Controller
             'status_code' => 200,
             'status_message' => 'Son récupéré avec succès.',
             'song' => $song,
-        ]);
+        ], 200);
     }
 
     public function update(Request $request, Song $song)
@@ -94,7 +94,7 @@ class SongController extends Controller
                 return response()->json([
                     'status_code' => 422,
                     'errors' => $validator->errors(),
-                ]);
+                ], 422);
             }
 
             // Update the beat with the validated data
@@ -106,7 +106,7 @@ class SongController extends Controller
                     'status_code' => 200,
                     'status_message' => 'Son mis à jour avec succès.',
                     'song' => $song,
-                ]
+                ], 200
             );
 
         } catch (\Exception $exception) {
@@ -114,7 +114,7 @@ class SongController extends Controller
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de la mise à jour du Son.',
                 'exception' => $exception->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -126,15 +126,15 @@ class SongController extends Controller
             $song->delete();
 
             return response()->json([
-                'status_code' => 200,
+                'status_code' => 204,
                 'status_message' => 'Son supprimé avec succès.',
-            ]);
+            ], 204);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de la suppression du Son.',
                 'exception' => $exception->getMessage(),
-            ]);
+            ], 500);
         }
     }
 

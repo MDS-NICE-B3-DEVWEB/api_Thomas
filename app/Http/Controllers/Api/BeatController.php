@@ -18,7 +18,7 @@ class BeatController extends Controller
             'status_code' => 200,
             'status_message' => 'Bibliothèque de Beats récupérée avec succès.',
             'beats' => $beats,
-        ]);
+        ], 200);
     }
 
     public function beatmakerBeats($beatmakerId)
@@ -29,7 +29,7 @@ class BeatController extends Controller
             'status_code' => 200,
             'status_message' => 'Beats du beatmaker récupérés avec succès.',
             'beats' => $beats,
-        ]);
+        ], 200);
     }
 
     public function store(Request $request)
@@ -45,7 +45,7 @@ class BeatController extends Controller
                 return response()->json([
                     'status_code' => 422,
                     'errors' => $validator->errors(),
-                ]);
+                ], 422);
             }
 
             $beat = new Beat();
@@ -63,16 +63,16 @@ class BeatController extends Controller
             $beat->save();
 
             return response()->json([
-                'status_code' => 200,
+                'status_code' => 201,
                 'status_message' => 'Beat enregistré avec succès.',
                 'beat' => $beat,
-            ]);
+            ], 201);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de l\'enregistrement du Beat.',
                 'exception' => $exception->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -103,7 +103,7 @@ class BeatController extends Controller
                 return response()->json([
                     'status_code' => 422,
                     'errors' => $validator->errors(),
-                ]);
+                ], 422);
             }
 
             // Update the beat with the validated data
@@ -115,7 +115,7 @@ class BeatController extends Controller
                     'status_code' => 200,
                     'status_message' => 'Beat mis à jour avec succès.',
                     'beat' => $beat,
-                ]
+                ], 200
             );
 
         } catch (\Exception $exception) {
@@ -123,7 +123,7 @@ class BeatController extends Controller
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de la mise à jour du Beat.',
                 'exception' => $exception->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -136,13 +136,13 @@ class BeatController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'status_message' => 'Beat supprimé avec succès.',
-            ]);
+            ], 200);
         } catch (\Exception $exception) {
             return response()->json([
                 'status_code' => 500,
                 'status_message' => 'Erreur lors de la suppression du Beat.',
                 'exception' => $exception->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
