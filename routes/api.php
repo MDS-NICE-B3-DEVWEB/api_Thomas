@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; // Add this line
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BeatController;
@@ -27,7 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::apiResource('posts', PostController::class)->except('index');
 
     Route::get('/user', function () {
-        return auth()->user();
+        $user = auth()->user();
+        $user->role = $user->roles;
+        return $user;
     });
 
     // Beats routes
