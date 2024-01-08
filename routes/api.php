@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\SongController;
 // Route::get('posts', [PostController::class, 'index']);
 
 Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
+Route::get('/login', [UserController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
