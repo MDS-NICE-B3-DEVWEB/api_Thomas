@@ -59,23 +59,47 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
     docker-compose exec app php artisan db:seed
     ```
 
-## Authentification
+## En-têtes à utiliser
 
-Cette API utilise l'authentification par token. Pour accéder aux endpoints qui nécessitent une authentification, vous devez inclure un header `Authorization` avec la valeur `Bearer {votre_token}` dans votre requête.
+- `Content-Type: application/json` pour les requêtes qui envoient des données JSON.
+- `Content-Type: multipart/form-data` pour les requêtes qui envoient des fichiers.
+- `Authorization: Bearer YOUR_TOKEN` pour les routes qui nécessitent une authentification.
+
 
 ## Endpoints
 
 ### Authentification
 
 - `POST /login`: Authentifie un utilisateur et renvoie un token.
-  - Données à envoyer : `email` (string, format email), `password` (string).
+  - Données à envoyer : 
+    ```json
+    {
+      "email": "user@example.com",
+      "password": "password123"
+    }
+    ```
 
 ### Utilisateurs
 
 - `GET /users`: Récupère tous les utilisateurs. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
 - `GET /users/{id}`: Récupère un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
 - `POST /users`: Crée un nouvel utilisateur. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
+  - Données à envoyer : 
+    ```json
+    {
+      "name": "New User",
+      "email": "newuser@example.com",
+      "password": "password123",
+      "role": "artist"
+    }
+    ```
 - `PUT /users/{id}`: Met à jour un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
+  - Données à envoyer : 
+    ```json
+    {
+      "name": "Updated User"
+    }
+    ```
 - `DELETE /users/{id}`: Supprime un utilisateur spécifique. Nécessite un token (peut être en tant que 'beatmaker' ou 'artist').
 
 ### Chansons
@@ -83,7 +107,16 @@ Cette API utilise l'authentification par token. Pour accéder aux endpoints qui 
 - `GET /songs`: Récupère toutes les chansons. Nécessite un token en tant que 'artist'.
 - `GET /songs/{id}`: Récupère une chanson spécifique. Nécessite un token en tant que 'artist'.
 - `POST /songs`: Crée une nouvelle chanson. Nécessite un token en tant que 'artist'.
+  - Données à envoyer (multipart/form-data) : 
+    - `title`: (text) "New Song"
+    - `audio_file`: (file) Le fichier audio de la chanson.
 - `PUT /songs/{id}`: Met à jour une chanson spécifique. Nécessite un token en tant que 'artist'.
+  - Données à envoyer : 
+    ```json
+    {
+      "title": "Updated Song"
+    }
+    ```
 - `DELETE /songs/{id}`: Supprime une chanson spécifique. Nécessite un token en tant que 'artist'.
 
 ### Beats
@@ -91,5 +124,14 @@ Cette API utilise l'authentification par token. Pour accéder aux endpoints qui 
 - `GET /beats`: Récupère tous les beats. Nécessite un token en tant que 'beatmaker'.
 - `GET /beats/{id}`: Récupère un beat spécifique. Nécessite un token en tant que 'beatmaker'.
 - `POST /beats`: Crée un nouveau beat. Nécessite un token en tant que 'beatmaker'.
+  - Données à envoyer (multipart/form-data) : 
+    - `title`: (text) "New Beat"
+    - `audio_file`: (file) Le fichier audio du beat.
 - `PUT /beats/{id}`: Met à jour un beat spécifique. Nécessite un token en tant que 'beatmaker'.
+  - Données à envoyer : 
+    ```json
+    {
+      "title": "Updated Beat"
+    }
+    ```
 - `DELETE /beats/{id}`: Supprime un beat spécifique. Nécessite un token en tant que 'beatmaker'.
