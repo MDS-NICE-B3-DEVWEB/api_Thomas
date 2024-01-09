@@ -24,21 +24,19 @@ Route::get('/login', [UserController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Authenticated routes
-    // Route::apiResource('posts', PostController::class)->except('index');
+    
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     Route::get('/user', function () {
         $user = auth()->user();
-        $user->role = $user->roles;
         return $user;
     });
 
     // Beats routes
     Route::prefix('beats')->group(function () {
         Route::get('/', [BeatController::class, 'index']);
-        Route::get('/{beat}', [BeatController::class, 'show'])->middleware('role:beatmaker');
+        Route::get('/{beat}', [BeatController::class, 'show']);
         Route::middleware('role:beatmaker')->group(function () {
             Route::post('/new', [BeatController::class, 'store']);
             Route::put('/{beat}', [BeatController::class, 'update']);
@@ -50,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Songs routes
     Route::prefix('songs')->group(function () {
         Route::get('/', [SongController::class, 'index']);
-        Route::get('/{song}', [SongController::class, 'show'])->middleware('role:artist');
+        Route::get('/{song}', [SongController::class, 'show']);
         Route::middleware('role:artist')->group(function () {
             Route::post('/new', [SongController::class, 'store']);
             Route::put('/{song}', [SongController::class, 'update']);
@@ -59,3 +57,5 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/artists/{artist}/songs', [SongController::class, 'artistSongs']);
 });
+
+

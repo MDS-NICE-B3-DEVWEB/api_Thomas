@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Song; 
+use App\Models\Song;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,7 +12,7 @@ class SongController extends Controller
 {
     public function index()
     {
-        $songs = Song::all(); 
+        $songs = Song::all();
 
         return response()->json([
             'status_code' => 200,
@@ -76,6 +76,12 @@ class SongController extends Controller
 
     public function show(Song $song)
     {
+        if (!$song) {
+            return response()->json([
+                'status_code' => 404,
+                'error' => 'Son non trouvé.',
+            ], 404);
+        }
         return response()->json([
             'status_code' => 200,
             'status_message' => 'Son récupéré avec succès.',
@@ -106,7 +112,8 @@ class SongController extends Controller
                     'status_code' => 200,
                     'status_message' => 'Son mis à jour avec succès.',
                     'song' => $song,
-                ], 200
+                ],
+                200
             );
 
         } catch (\Exception $exception) {

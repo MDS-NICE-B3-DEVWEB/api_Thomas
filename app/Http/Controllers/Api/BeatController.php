@@ -77,19 +77,19 @@ class BeatController extends Controller
     }
 
     public function show(Beat $beat)
-    {
-        if (!$beat) {
-            return response()->json([
-                'status_code' => 404,
-                'error' => 'Beat non trouvé.',
-            ], 404);
-        }
-
+{
+    if (!$beat) {
         return response()->json([
-            'status_code' => 200,
-            'data' => $beat,
-        ], 200);
+            'status_code' => 404,
+            'error' => 'Beat non trouvé.',
+        ], 404);
     }
+
+    return response()->json([
+        'status_code' => 200,
+        'data' => $beat,
+    ], 200);
+}
 
     public function update(Request $request, Beat $beat)
     {
@@ -115,7 +115,8 @@ class BeatController extends Controller
                     'status_code' => 200,
                     'status_message' => 'Beat mis à jour avec succès.',
                     'beat' => $beat,
-                ], 200
+                ],
+                200
             );
 
         } catch (\Exception $exception) {
