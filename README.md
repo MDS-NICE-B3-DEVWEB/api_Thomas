@@ -143,3 +143,5 @@ Cette API permet de gérer des utilisateurs, des chansons et des beats. Les util
     }
     ```
 - `DELETE /beats/{id}`: Supprime un beat spécifique. Nécessite un token en tant que 'beatmaker'.
+
+Note : Pour accéder aux routes de modification et de suppression de beats et de songs, vous devez être le propriétaire de ces enregistrements.
