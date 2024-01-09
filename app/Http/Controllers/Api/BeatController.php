@@ -7,6 +7,7 @@ use App\Models\Beat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class BeatController extends Controller
 {
@@ -94,6 +95,12 @@ class BeatController extends Controller
     public function update(Request $request, Beat $beat)
     {
         try {
+            if (Auth::id() !== $beat->user_id) {
+                return response()->json([
+                    'status_code' => 403,
+                    'error' => 'Vous n\'avez pas la permission de modifier ce beat.',
+                ], 403);
+            }
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
@@ -131,6 +138,12 @@ class BeatController extends Controller
     public function destroy(Beat $beat)
     {
         try {
+            if (Auth::id() !== $beat->user_id) {
+                return response()->json([
+                    'status_code' => 403,
+                    'error' => 'Vous n\'avez pas la permission de supprimer ce beat.',
+                ], 403);
+            }
             Storage::disk('public')->delete($beat->file_path);
             $beat->delete();
 

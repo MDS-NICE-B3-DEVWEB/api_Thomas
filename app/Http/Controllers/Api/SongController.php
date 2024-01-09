@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Song;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+
 
 class SongController extends Controller
 {
@@ -92,6 +94,12 @@ class SongController extends Controller
     public function update(Request $request, Song $song)
     {
         try {
+            if (Auth::id() !== $song->user_id) {
+                return response()->json([
+                    'status_code' => 403,
+                    'error' => 'Vous n\'avez pas la permission de modifier cette chanson.',
+                ], 403);
+            }
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
             ]);
@@ -129,6 +137,12 @@ class SongController extends Controller
     public function destroy(Song $song)
     {
         try {
+            if (Auth::id() !== $song->user_id) {
+                return response()->json([
+                    'status_code' => 403,
+                    'error' => 'Vous n\'avez pas la permission de supprimer cette chanson.',
+                ], 403);
+            }
             Storage::disk('public')->delete($song->file_path);
             $song->delete();
 
